@@ -6,7 +6,7 @@ import "./@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "./@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./@openzeppelin/contracts/access/Ownable.sol";
 
-contract Elonmars is ERC1155, Ownable {
+contract ElonmarsNFT is ERC1155, Ownable {
     mapping(uint256 => uint256) public price; // tokenID => price
     mapping(uint256 => uint256) public limit; // tokenID => limit
 
