@@ -11,7 +11,7 @@ contract ElonmarsTreasury is Ownable {
     IERC20 public feeToken = IERC20(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56);
     IERC20 public premiumToken =
         IERC20(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56);
-    address public admin = 0x2faf8ab2b9ac8Bd4176A0B9D31502bA3a59B4b41; // Test
+    address public admin = 0x2faf8ab2b9ac8Bd4176A0B9D31502bA3a59B4b41; // CONFIG
     uint256 public minDeposit = 320 * 10 ** 9; // 320 SPX
     uint256 public premiumPrice = 15 ether; // 15 BUSD
     uint256 public fee = 1 ether; // 1 BUSD
