@@ -5,8 +5,11 @@ pragma solidity =0.8.17;
 import "./@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "./@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./@openzeppelin/contracts/access/Ownable.sol";
+import "./@openzeppelin/contracts/utils/Strings.sol";
 
 contract ElonmarsNFT is ERC1155, Ownable {
+    using Strings for uint256;
+
     mapping(uint256 => uint256) public price; // tokenID => price
     mapping(uint256 => uint256) public limit; // tokenID => limit
 
@@ -49,6 +52,13 @@ contract ElonmarsNFT is ERC1155, Ownable {
         _mint(msg.sender, _tokenID, _quantity, data);
     }
 
+    function uri(uint256 _tokenID) public view override returns (string memory) {
+        return
+            bytes(_uri).length > 0
+                ? string(abi.encodePacked(_uri, _tokenID.toString(), ".json"))
+                : "";
+    }
+
     function updatePrices(
         uint256 _common_price,
         uint256 _uncommon_price,
@@ -58,7 +68,7 @@ contract ElonmarsNFT is ERC1155, Ownable {
         price[1] = _uncommon_price;
         price[2] = _rare_price;
     }
-    
+
     function updateLimits(
         uint256 _common_limit,
         uint256 _uncommon_limit,
@@ -69,21 +79,15 @@ contract ElonmarsNFT is ERC1155, Ownable {
         limit[2] = _rare_limit;
     }
 
-    function updatePayToken(
-        IERC20 _payToken
-    ) external onlyOwner {
+    function updatePayToken(IERC20 _payToken) external onlyOwner {
         payToken = _payToken;
     }
 
-    function updateTreasury(
-        address _treasury
-    ) external onlyOwner {
+    function updateTreasury(address _treasury) external onlyOwner {
         treasury = _treasury;
     }
 
-    function updateAdmin(
-        address _admin
-    ) external onlyOwner {
+    function updateAdmin(address _admin) external onlyOwner {
         admin = _admin;
     }
 
