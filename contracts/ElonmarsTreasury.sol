@@ -53,6 +53,8 @@ contract ElonmarsTreasury is Ownable {
     // withdraw
     mapping(address => uint256) public withdrawnSpx;
     mapping(address => uint256) public paidFeeAmount;
+    mapping(address => uint256) public dailyRequestTimestamp;
+    mapping(address => uint256) public dailyRequestAmount;
     // premium
     mapping(address => uint256) public premiumTimestamp;
     mapping(address => uint256) public amountForPremium;
@@ -336,15 +338,31 @@ contract ElonmarsTreasury is Ownable {
         return _dailyLimitSPX;
     }
 
-    function getDailyWithdrawnSpx(address user) public view returns (uint256) {}
-
-    function getDailyRemainSpx(address user) public view returns (uint256) {
-        return (getDailyLimitSpx(user) - getDailyWithdrawnSpx(user));
+    function getDailyRequestedSpx(address user) public view returns (uint256) {
+        if (dailyRequestTimestamp[user] + limitDuration > block.timestamp) {
+            return dailyRequestAmount[user];
+        }
+        return 0;
     }
 
-    // TODO withdraw limit check
+    function getDailyRemainSpx(address user) public view returns (uint256) {
+        return (getDailyLimitSpx(user) - getDailyRequestedSpx(user));
+    }
+
     function withdrawRequest(uint256 amount) external {
         require(amount > 0, "Invalid Amount");
+        uint256 remainRequestAmount = getDailyRemainSpx(msg.sender);
+        require(amount <= remainRequestAmount, "Daily Limit");
+
+        if (
+            dailyRequestTimestamp[msg.sender] + limitDuration > block.timestamp
+        ) {
+            dailyRequestAmount[msg.sender] += amount;
+        } else {
+            dailyRequestAmount[msg.sender] = amount;
+            dailyRequestTimestamp[msg.sender] = block.timestamp;
+        }
+
         require(
             feeToken.transferFrom(msg.sender, address(this), fee),
             "Faild TransferFrom"
@@ -361,7 +379,6 @@ contract ElonmarsTreasury is Ownable {
         emit LogWithdrawRequest(msg.sender, nonceRequest, amount, fee);
     }
 
-    // TODO withdraw limit check
     function withdraw() external {
         require(msg.sender == admin, "Invalid Admin");
         require(nonceRequest > nonceWithdrawn, "No Pending Request");
