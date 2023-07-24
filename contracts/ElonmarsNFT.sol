@@ -16,7 +16,7 @@ contract ElonmarsNFT is ERC1155, Ownable {
     // IERC20 public payToken = IERC20(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); // Bsc Mainnet
     // address public treasury = 0x2faf8ab2b9ac8Bd4176A0B9D31502bA3a59B4b41;
     // address public admin = 0x2faf8ab2b9ac8Bd4176A0B9D31502bA3a59B4b41;
-    IERC20 public payToken = IERC20(0x7A62eE9B6cde5cdd3Fd9d82448952f8E2f99c8C0); // Bsc Testnet
+    IERC20 public payToken = IERC20(0x5e1100ea18F918a4e9AB70694c6c554e1E940D32); // Bsc Testnet
     address public treasury = 0x2faf8ab2b9ac8Bd4176A0B9D31502bA3a59B4b41; // Test
     address public admin = 0x2faf8ab2b9ac8Bd4176A0B9D31502bA3a59B4b41; // Test
 
