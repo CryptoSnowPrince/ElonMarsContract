@@ -10,13 +10,13 @@ import "./@openzeppelin/contracts/utils/Strings.sol";
 contract ElonmarsNFT is ERC1155, Ownable {
     using Strings for uint256;
 
+    uint256 public limit = 100;
     mapping(uint256 => uint256) public price; // tokenID => price
-    mapping(uint256 => uint256) public limit; // tokenID => limit
 
     // IERC20 public payToken = IERC20(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); // Bsc Mainnet
     // address public treasury = 0x2faf8ab2b9ac8Bd4176A0B9D31502bA3a59B4b41;
     // address public admin = 0x2faf8ab2b9ac8Bd4176A0B9D31502bA3a59B4b41;
-    IERC20 public payToken = IERC20(0x5e1100ea18F918a4e9AB70694c6c554e1E940D32); // Sepolia Testnet
+    IERC20 public payToken = IERC20(0x5e1100ea18F918a4e9AB70694c6c554e1E940D32); // Test Bsc Mainnet
     address public treasury = 0x2faf8ab2b9ac8Bd4176A0B9D31502bA3a59B4b41; // Test
     address public admin = 0x2faf8ab2b9ac8Bd4176A0B9D31502bA3a59B4b41; // Test
 
@@ -26,10 +26,6 @@ contract ElonmarsNFT is ERC1155, Ownable {
         price[0] = 30 ether;
         price[1] = 60 ether;
         price[2] = 90 ether;
-
-        limit[0] = 45;
-        limit[1] = 35;
-        limit[2] = 20;
     }
 
     function mint(uint256 _quantity, uint256 _tokenID) external {
@@ -37,10 +33,10 @@ contract ElonmarsNFT is ERC1155, Ownable {
         require(_quantity > 0, "Zero Amount");
 
         if (msg.sender != admin) {
-            require(
-                balanceOf(msg.sender, _tokenID) + _quantity <= limit[_tokenID],
-                "Balance LIMIT"
-            );
+            uint256 userBal = balanceOf(msg.sender, 0) +
+                balanceOf(msg.sender, 1) +
+                balanceOf(msg.sender, 2);
+            require(userBal + _quantity <= limit, "Balance LIMIT");
 
             uint256 amount = price[_tokenID] * _quantity;
             payToken.transferFrom(msg.sender, address(this), amount);
@@ -52,7 +48,9 @@ contract ElonmarsNFT is ERC1155, Ownable {
         _mint(msg.sender, _tokenID, _quantity, data);
     }
 
-    function uri(uint256 _tokenID) public view override returns (string memory) {
+    function uri(
+        uint256 _tokenID
+    ) public view override returns (string memory) {
         return
             bytes(_uri).length > 0
                 ? string(abi.encodePacked(_uri, _tokenID.toString(), ".json"))
@@ -69,14 +67,8 @@ contract ElonmarsNFT is ERC1155, Ownable {
         price[2] = _rare_price;
     }
 
-    function updateLimits(
-        uint256 _common_limit,
-        uint256 _uncommon_limit,
-        uint256 _rare_limit
-    ) external onlyOwner {
-        limit[0] = _common_limit;
-        limit[1] = _uncommon_limit;
-        limit[2] = _rare_limit;
+    function updateLimit(uint256 _limit) external onlyOwner {
+        limit = _limit;
     }
 
     function updatePayToken(IERC20 _payToken) external onlyOwner {
