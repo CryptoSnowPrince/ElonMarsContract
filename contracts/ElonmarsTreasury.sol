@@ -15,6 +15,7 @@ contract ElonmarsTreasury is Ownable {
     address public admin = 0x2faf8ab2b9ac8Bd4176A0B9D31502bA3a59B4b41; // CONFIG
     uint256 public minDeposit = 320 * 10 ** 9; // 320 SPX
     uint256 public fee = 1 ether; // withdraw fee: 1 BUSD
+    uint256 public minWithdraw = 30 * 10 ** 9; // 30 SPX
     uint256 public dailyLimitUSD = 5 * 10 ** 18; // $5(5 BUSD)
     uint256 public dailyPremiumLimitUSD = 10 * 10 ** 18; // $10(5 BUSD)
     uint256 public limitDuration = 86400; // 1 day
@@ -350,7 +351,7 @@ contract ElonmarsTreasury is Ownable {
     }
 
     function withdrawRequest(uint256 amount) external {
-        require(amount > 0, "Invalid Amount");
+        require(amount >= minWithdraw, "Insufficient withdraw amount");
         uint256 remainRequestAmount = getDailyRemainSpx(msg.sender);
         require(amount <= remainRequestAmount, "Daily Limit");
 
@@ -417,6 +418,10 @@ contract ElonmarsTreasury is Ownable {
 
     function updateMinDeposit(uint256 _minDeposit) external onlyOwner {
         minDeposit = _minDeposit;
+    }
+
+    function updateMinWithdraw(uint256 _minWithdraw) external onlyOwner {
+        minWithdraw = _minWithdraw;
     }
 
     function updateFee(uint256 _fee) external onlyOwner {
